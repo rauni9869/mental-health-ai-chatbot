@@ -23,6 +23,15 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
+import { retrieveKnowledge } from '@/lib/ai/tools/retrieve-knowledge';
+import { guideCopingSkill } from '@/lib/ai/tools/guide-coping-skill';
+import { getCrisisResources } from '@/lib/ai/tools/get-crisis-resources';
+import { logMoodCheckIn } from '@/lib/ai/tools/log-mood-check-in';
+import {
+  assessCrisis,
+  buildCrisisReply,
+  extractUserText,
+} from '@/lib/wellness/crisis';
 import { isProductionEnvironment } from '@/lib/constants';
 import { myProvider } from '@/lib/ai/providers';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
@@ -133,6 +142,9 @@ export async function POST(request: Request) {
       country,
     };
 
+    const userText = extractUserText(message.parts as Array<{ type?: string; text?: string }>);
+    const crisis = assessCrisis(userText);
+
     await saveMessages({
       messages: [
         {
@@ -153,9 +165,21 @@ export async function POST(request: Request) {
 
     const stream = createUIMessageStream({
       execute: ({ writer: dataStream }) => {
+        if (crisis.level === 'imminent') {
+          const reply = buildCrisisReply(country);
+          dataStream.write({ type: 'text-start', id: 'crisis-reply' });
+          dataStream.write({
+            type: 'text-delta',
+            id: 'crisis-reply',
+            delta: reply,
+          });
+          dataStream.write({ type: 'text-end', id: 'crisis-reply' });
+          return;
+        }
+
         const result = streamText({
           model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          system: systemPrompt({ selectedChatModel, requestHints, crisisLevel: crisis.level }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
           experimental_activeTools:
@@ -166,6 +190,10 @@ export async function POST(request: Request) {
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
+                  'retrieveKnowledge',
+                  'guideCopingSkill',
+                  'getCrisisResources',
+                  'logMoodCheckIn',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools: {
@@ -176,6 +204,10 @@ export async function POST(request: Request) {
               session,
               dataStream,
             }),
+            retrieveKnowledge,
+            guideCopingSkill,
+            getCrisisResources,
+            logMoodCheckIn: logMoodCheckIn({ session, chatId: id }),
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,

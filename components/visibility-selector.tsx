@@ -28,13 +28,13 @@ const visibilities: Array<{
   {
     id: 'private',
     label: 'Private',
-    description: 'Only you can access this chat',
+    description: 'Only you can access this health chat',
     icon: <LockIcon />,
   },
   {
     id: 'public',
     label: 'Public',
-    description: 'Anyone with the link can access this chat',
+    description: 'Anyone with the link can read this health chat. Prefer private.',
     icon: <GlobeIcon />,
   },
 ];

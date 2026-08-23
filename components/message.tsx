@@ -9,6 +9,12 @@ import { Markdown } from './markdown';
 import { MessageActions } from './message-actions';
 import { PreviewAttachment } from './preview-attachment';
 import { Weather } from './weather';
+import {
+  CrisisCard,
+  KnowledgeCard,
+  MoodCard,
+  SkillCard,
+} from './wellness-tool-cards';
 import equal from 'fast-deep-equal';
 import { cn, sanitizeText } from '@/lib/utils';
 import { Button } from './ui/button';
@@ -162,6 +168,36 @@ const PurePreviewMessage = ({
                       />
                     </div>
                   );
+                }
+              }
+
+              if (type === 'tool-retrieveKnowledge') {
+                const { toolCallId, state } = part;
+                if (state === 'output-available') {
+                  return (
+                    <KnowledgeCard key={toolCallId} output={part.output} />
+                  );
+                }
+              }
+
+              if (type === 'tool-guideCopingSkill') {
+                const { toolCallId, state } = part;
+                if (state === 'output-available') {
+                  return <SkillCard key={toolCallId} output={part.output} />;
+                }
+              }
+
+              if (type === 'tool-getCrisisResources') {
+                const { toolCallId, state } = part;
+                if (state === 'output-available') {
+                  return <CrisisCard key={toolCallId} output={part.output} />;
+                }
+              }
+
+              if (type === 'tool-logMoodCheckIn') {
+                const { toolCallId, state } = part;
+                if (state === 'output-available') {
+                  return <MoodCard key={toolCallId} output={part.output} />;
                 }
               }
 

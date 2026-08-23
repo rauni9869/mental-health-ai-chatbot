@@ -27,6 +27,8 @@ import {
   type DBMessage,
   type Chat,
   stream,
+  moodCheckIn,
+  type MoodCheckIn,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import { generateUUID } from '../utils';
@@ -109,6 +111,10 @@ export async function deleteChatById({ id }: { id: string }) {
     await db.delete(vote).where(eq(vote.chatId, id));
     await db.delete(message).where(eq(message.chatId, id));
     await db.delete(stream).where(eq(stream.chatId, id));
+    await db
+      .update(moodCheckIn)
+      .set({ chatId: null })
+      .where(eq(moodCheckIn.chatId, id));
 
     const [chatsDeleted] = await db
       .delete(chat)
@@ -515,6 +521,64 @@ export async function createStreamId({
     throw new ChatSDKError(
       'bad_request:database',
       'Failed to create stream id',
+    );
+  }
+}
+
+export async function saveMoodCheckIn({
+  userId,
+  chatId,
+  mood,
+  intensity,
+  notes,
+}: {
+  userId: string;
+  chatId?: string;
+  mood: string;
+  intensity?: number;
+  notes?: string;
+}): Promise<MoodCheckIn> {
+  try {
+    const [row] = await db
+      .insert(moodCheckIn)
+      .values({
+        userId,
+        chatId,
+        mood,
+        intensity,
+        notes,
+        createdAt: new Date(),
+      })
+      .returning();
+
+    return row;
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to save mood check-in',
+    );
+  }
+}
+
+
+export async function getMoodCheckInsByUserId({
+  userId,
+  limit = 30,
+}: {
+  userId: string;
+  limit?: number;
+}): Promise<Array<MoodCheckIn>> {
+  try {
+    return await db
+      .select()
+      .from(moodCheckIn)
+      .where(eq(moodCheckIn.userId, userId))
+      .orderBy(desc(moodCheckIn.createdAt))
+      .limit(limit);
+  } catch (error) {
+    throw new ChatSDKError(
+      'bad_request:database',
+      'Failed to load mood check-ins',
     );
   }
 }

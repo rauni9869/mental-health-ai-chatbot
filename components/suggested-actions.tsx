@@ -25,19 +25,22 @@ function PureSuggestedActions({
       action: 'What are the advantages of using Next.js?',
     },
     {
-      title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
-      action: `Write code to demonstrate djikstra's algorithm`,
+      title: 'Help me ride out',
+      label: 'a panic wave right now',
+      action:
+        'I feel a panic wave coming. Help me ride it out with one grounded skill and a short explanation of what panic is.',
     },
     {
-      title: 'Help me write an essay',
-      label: `about silicon valley`,
-      action: `Help me write an essay about silicon valley`,
+      title: 'Build a wind-down',
+      label: 'plan for sleep tonight',
+      action:
+        'I cannot sleep because my mind is racing. Help me build a 20-minute wind-down plan I can keep.',
     },
     {
-      title: 'What is the weather',
-      label: 'in San Francisco?',
-      action: 'What is the weather in San Francisco?',
+      title: 'Log a check-in',
+      label: 'for between sessions',
+      action:
+        'Log a check-in: mood is low, intensity 6, note that work stress piled up this week.',
     },
   ];
 
