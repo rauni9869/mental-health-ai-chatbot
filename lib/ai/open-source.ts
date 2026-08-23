@@ -23,7 +23,7 @@ export async function getOpenSourceModels() {
       apiKey: process.env.OLLAMA_API_KEY ?? 'ollama',
     });
 
-    const preferredChat = process.env.OLLAMA_CHAT_MODEL ?? 'llama3.2:1b';
+    const preferredChat = process.env.OLLAMA_CHAT_MODEL ?? 'llama3.1:latest';
     const preferredSmall = process.env.OLLAMA_SMALL_MODEL ?? preferredChat;
     const preferredReasoning =
       process.env.OLLAMA_REASONING_MODEL ?? preferredChat;

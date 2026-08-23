@@ -1,10 +1,10 @@
 const FALLBACK_NAMES = [
-  'llama3.2:1b',
-  'llama3.2:latest',
-  'llama3.2',
   'llama3.1:latest',
   'llama3.1',
   'llama3.1:8b',
+  'llama3.2:1b',
+  'llama3.2:latest',
+  'llama3.2',
   'llama3:latest',
   'llama3',
   'phi3:mini',
@@ -67,7 +67,7 @@ export function describeOllamaModelError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
 
   if (/not found|no pulled models/i.test(message)) {
-    return 'Ollama is running, but no usable chat model is installed. In Terminal run: ollama list. Then ollama pull llama3.2:1b (about 1.3GB). If a different model is already listed, put that exact name in .env.local as OLLAMA_CHAT_MODEL and restart pnpm dev.';
+    return 'Ollama is running, but no usable chat model is installed. In Terminal run: ollama list. Then ollama pull llama3.1 (about 5GB) or a smaller model. If a model is already listed, put that exact name in .env.local as OLLAMA_CHAT_MODEL and restart pnpm dev.';
   }
 
   if (

@@ -111,11 +111,13 @@ If Neon’s URL contains `&` or quotes, wrap the value in double quotes in `.env
 pnpm install
 pnpm db:migrate
 ollama list
-ollama pull llama3.2:1b
+# You already have a model if a NAME appears (for example llama3.1:latest).
+# Only pull if the list is empty:
+# ollama pull llama3.1
 pnpm dev
 ```
 
-`ollama list` must show a model **before** chat will work. If `llama3.2:1b` is missing, pull it (about 1.3GB). If another model is already listed, put that exact name in `.env.local` as `OLLAMA_CHAT_MODEL`.
+`ollama list` must show a model **before** chat will work. Put that exact NAME in `.env.local` as `OLLAMA_CHAT_MODEL` (example: `llama3.1:latest`). Do not set `llama3.2:1b` unless that name is in the list.
 
 Wait for **Ready**, then open:
 

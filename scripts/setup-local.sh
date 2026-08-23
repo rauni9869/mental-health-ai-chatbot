@@ -15,9 +15,9 @@ if [ ! -f .env.local ]; then
 AUTH_SECRET=${secret}
 POSTGRES_URL=postgres://steady:steady@127.0.0.1:5432/steady
 OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_CHAT_MODEL=llama3.1
-OLLAMA_REASONING_MODEL=llama3.1
-OLLAMA_SMALL_MODEL=llama3.1
+OLLAMA_CHAT_MODEL=llama3.1:latest
+OLLAMA_REASONING_MODEL=llama3.1:latest
+OLLAMA_SMALL_MODEL=llama3.1:latest
 OLLAMA_API_KEY=ollama
 EOF
   echo "Wrote .env.local (gitignored). AUTH_SECRET was generated. No OpenAI key."
