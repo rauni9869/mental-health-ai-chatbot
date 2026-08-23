@@ -243,20 +243,40 @@ export async function POST(request: Request) {
     });
 
     const streamContext = getStreamContext();
+    const sseHeaders = {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+    };
 
     if (streamContext) {
-      return new Response(
-        await streamContext.resumableStream(streamId, () =>
+      try {
+        const resumable = await streamContext.resumableStream(streamId, () =>
           stream.pipeThrough(new JsonToSseTransformStream()),
-        ),
-      );
-    } else {
-      return new Response(stream);
+        );
+
+        if (resumable) {
+          return new Response(resumable, { headers: sseHeaders });
+        }
+      } catch (resumeError) {
+        console.error(
+          'Resumable stream failed; sending live SSE instead',
+          resumeError,
+        );
+      }
     }
+
+    return new Response(stream.pipeThrough(new JsonToSseTransformStream()), {
+      headers: sseHeaders,
+    });
   } catch (error) {
+    console.error('POST /api/chat failed', error);
+
     if (error instanceof ChatSDKError) {
       return error.toResponse();
     }
+
+    const cause = error instanceof Error ? error.message : String(error);
+    return new ChatSDKError('offline:chat', cause).toResponse();
   }
 }
 
