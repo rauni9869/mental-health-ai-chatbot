@@ -20,7 +20,7 @@ export function getOpenSourceModels() {
       baseURL: `${ollamaBaseUrl.replace(/\/$/, '').replace(/\/v1$/, '')}/v1`,
       apiKey: process.env.OLLAMA_API_KEY ?? 'ollama',
     });
-    const chatId = process.env.OLLAMA_CHAT_MODEL ?? 'llama3.1';
+    const chatId = process.env.OLLAMA_CHAT_MODEL ?? 'llama3.2:1b';
     const smallId = process.env.OLLAMA_SMALL_MODEL ?? chatId;
     const reasoningId = process.env.OLLAMA_REASONING_MODEL ?? chatId;
 
