@@ -9,12 +9,12 @@ export interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model',
-    name: 'Supportive',
-    description: 'Warm, grounded between-session companion',
+    name: 'Llama 3.3',
+    description: 'Open-weight Llama 3.3 70B via Groq or local Ollama',
   },
   {
     id: 'chat-model-reasoning',
-    name: 'Careful',
-    description: 'Slower reasoning for complex emotional situations',
+    name: 'DeepSeek R1',
+    description: 'Open-weight reasoning distill for careful replies',
   },
 ];

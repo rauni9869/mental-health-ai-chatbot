@@ -6,7 +6,7 @@ import { getMessageByErrorCode } from '@/lib/errors';
 
 test.describe
   .serial('Guest Session', () => {
-    test('Authenticate as guest user when a new session is loaded', async ({
+    test('Keep the marketing homepage public without forcing a guest session', async ({
       page,
     }) => {
       const response = await page.goto('/');
@@ -15,7 +15,35 @@ test.describe
         throw new Error('Failed to load page');
       }
 
-      let request = response.request();
+      let request: ReturnType<typeof response.request> | null =
+        response.request();
+
+      const chain = [];
+
+      while (request) {
+        chain.unshift(request.url());
+        request = request.redirectedFrom();
+      }
+
+      expect(chain).toEqual(['http://localhost:3000/']);
+      await expect(
+        page.getByRole('heading', {
+          name: 'Support for the hours your therapist is not on call.',
+        }),
+      ).toBeVisible();
+    });
+
+    test('Authenticate as guest user when the companion is opened', async ({
+      page,
+    }) => {
+      const response = await page.goto('/app');
+
+      if (!response) {
+        throw new Error('Failed to load page');
+      }
+
+      let request: ReturnType<typeof response.request> | null =
+        response.request();
 
       const chain = [];
 
@@ -25,14 +53,14 @@ test.describe
       }
 
       expect(chain).toEqual([
-        'http://localhost:3000/',
-        'http://localhost:3000/api/auth/guest?redirectUrl=http%3A%2F%2Flocalhost%3A3000%2F',
-        'http://localhost:3000/',
+        'http://localhost:3000/app',
+        'http://localhost:3000/api/auth/guest?redirectUrl=http%3A%2F%2Flocalhost%3A3000%2Fapp',
+        'http://localhost:3000/app',
       ]);
     });
 
     test('Log out is not available for guest users', async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/app');
 
       const sidebarToggleButton = page.getByTestId('sidebar-toggle-button');
       await sidebarToggleButton.click();
@@ -57,7 +85,8 @@ test.describe
         throw new Error('Failed to load page');
       }
 
-      let request = response.request();
+      let request: ReturnType<typeof response.request> | null =
+        response.request();
 
       const chain = [];
 
@@ -82,7 +111,7 @@ test.describe
     });
 
     test('Do not show email in user menu for guest user', async ({ page }) => {
-      await page.goto('/');
+      await page.goto('/app');
 
       const sidebarToggleButton = page.getByTestId('sidebar-toggle-button');
       await sidebarToggleButton.click();
@@ -115,14 +144,14 @@ test.describe
     test('Log into account that exists', async ({ page }) => {
       await authPage.login(testUser.email, testUser.password);
 
-      await page.waitForURL('/');
+      await page.waitForURL('/app');
       await expect(page.getByPlaceholder('Send a message...')).toBeVisible();
     });
 
     test('Display user email in user menu', async ({ page }) => {
       await authPage.login(testUser.email, testUser.password);
 
-      await page.waitForURL('/');
+      await page.waitForURL('/app');
       await expect(page.getByPlaceholder('Send a message...')).toBeVisible();
 
       const userEmail = await page.getByTestId('user-email');
@@ -137,21 +166,21 @@ test.describe
       page,
     }) => {
       await authPage.login(testUser.email, testUser.password);
-      await page.waitForURL('/');
+      await page.waitForURL('/app');
 
       const userEmail = await page.getByTestId('user-email');
       await expect(userEmail).toHaveText(testUser.email);
 
       await page.goto('/api/auth/guest');
-      await page.waitForURL('/');
+      await page.waitForURL('/app');
 
-      const updatedUserEmail = await page.getByTestId('user-email');
+      const updatedUserEmail = page.getByTestId('user-email');
       await expect(updatedUserEmail).toHaveText(testUser.email);
     });
 
     test('Log out is available for non-guest users', async ({ page }) => {
       await authPage.login(testUser.email, testUser.password);
-      await page.waitForURL('/');
+      await page.waitForURL('/app');
 
       authPage.openSidebar();
 
@@ -170,18 +199,18 @@ test.describe
       page,
     }) => {
       await authPage.login(testUser.email, testUser.password);
-      await page.waitForURL('/');
+      await page.waitForURL('/app');
 
       await page.goto('/register');
-      await expect(page).toHaveURL('/');
+      await expect(page).toHaveURL('/app');
     });
 
     test('Do not navigate to /login for non-guest users', async ({ page }) => {
       await authPage.login(testUser.email, testUser.password);
-      await page.waitForURL('/');
+      await page.waitForURL('/app');
 
       await page.goto('/login');
-      await expect(page).toHaveURL('/');
+      await expect(page).toHaveURL('/app');
     });
   });
 
