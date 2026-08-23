@@ -36,7 +36,7 @@ FastAPI + LangChain are gone on purpose: one deployable app, typed tools, and a 
 
 ## Local setup
 
-Full step-by-step: **[RUN.md](./RUN.md)**.
+Nothing installed yet? Full from-zero commands (Mac, Windows, Linux): **[RUN.md](./RUN.md)**.
 
 Short version:
 
