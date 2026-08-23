@@ -14,6 +14,11 @@ export function getPostgresUrl(): string {
   for (const key of keys) {
     const value = process.env[key]?.trim();
     if (value && /^(postgres|postgresql):\/\//i.test(value)) {
+      if (/@db\.[^/]+\.supabase\.co/i.test(value)) {
+        throw new Error(
+          'POSTGRES_URL uses db.*.supabase.co, which often does not resolve (ENOTFOUND). In Supabase: Connect → Session pooler URI. The host must contain pooler.supabase.com, not db.….supabase.co. Also replace [YOUR-PASSWORD] with your real database password.',
+        );
+      }
       return value;
     }
   }
