@@ -10,7 +10,8 @@ export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model',
     name: 'Llama 3.3',
-    description: 'Open-weight Llama via local Ollama (default) or Groq',
+    description:
+      'General Llama steered for mental health (prompt + curated notes, not a fine-tuned clinical model)',
   },
   {
     id: 'chat-model-reasoning',
