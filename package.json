@@ -16,7 +16,7 @@
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
-    "test:unit": "tsx --test lib/wellness/*.test.ts lib/ai/chat-title.test.ts",
+    "test:unit": "tsx --test lib/wellness/*.test.ts lib/ai/chat-title.test.ts lib/ai/ollama-models.test.ts",
     "setup:local": "bash scripts/setup-local.sh",
     "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
   },

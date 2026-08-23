@@ -8,7 +8,7 @@ import {
   updateChatVisiblityById,
 } from '@/lib/db/queries';
 import type { VisibilityType } from '@/components/visibility-selector';
-import { myProvider } from '@/lib/ai/providers';
+import { getLanguageModel } from '@/lib/ai/providers';
 import { fallbackChatTitle } from '@/lib/ai/chat-title';
 
 export async function saveChatModelAsCookie(model: string) {
@@ -23,7 +23,7 @@ export async function generateTitleFromUserMessage({
 }) {
   try {
     const { text: title } = await generateText({
-      model: myProvider.languageModel('title-model'),
+      model: await getLanguageModel('title-model'),
       system: `\n
     - you will generate a short title based on the first message a user begins a conversation with
     - ensure it is not more than 80 characters long

@@ -33,7 +33,8 @@ import {
   extractUserText,
 } from '@/lib/wellness/crisis';
 import { isProductionEnvironment } from '@/lib/constants';
-import { myProvider } from '@/lib/ai/providers';
+import { getLanguageModel } from '@/lib/ai/providers';
+import { describeOllamaModelError } from '@/lib/ai/ollama-models';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
 import { postRequestBodySchema, type PostRequestBody } from './schema';
 import { geolocation } from '@vercel/functions';
@@ -164,7 +165,7 @@ export async function POST(request: Request) {
     console.log(JSON.stringify(uiMessages, null, 2));
 
     const stream = createUIMessageStream({
-      execute: ({ writer: dataStream }) => {
+      execute: async ({ writer: dataStream }) => {
         if (crisis.level === 'imminent') {
           const reply = buildCrisisReply(country);
           dataStream.write({ type: 'text-start', id: 'crisis-reply' });
@@ -177,8 +178,23 @@ export async function POST(request: Request) {
           return;
         }
 
+        let model;
+        try {
+          model = await getLanguageModel(selectedChatModel);
+        } catch (error) {
+          const reply = describeOllamaModelError(error);
+          dataStream.write({ type: 'text-start', id: 'model-setup' });
+          dataStream.write({
+            type: 'text-delta',
+            id: 'model-setup',
+            delta: reply,
+          });
+          dataStream.write({ type: 'text-end', id: 'model-setup' });
+          return;
+        }
+
         const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
+          model,
           system: systemPrompt({ selectedChatModel, requestHints, crisisLevel: crisis.level }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
@@ -237,8 +253,8 @@ export async function POST(request: Request) {
         });
       },
       onError: (error) => {
-        console.log(error);
-        return 'Oops, an error occurred!';
+        console.error(error);
+        return describeOllamaModelError(error);
       },
     });
 
