@@ -1,12 +1,137 @@
 # How to run Steady from a blank computer
 
-You start with **nothing installed**. Pick **one** operating system section, run **every command in order**, then do the shared “project” section.
+You start with **nothing installed**. Pick **one** operating system section, run **every command in order**.
 
 Steady uses **local open-weight Llama via Ollama**. There is **no OpenAI key**. Do not paste Groq/OpenAI secrets into git.
 
+**You do not need Xcode.** Xcode.app is 10GB+. Skip it. Skip Homebrew too if you do not want Command Line Tools.
+
 ---
 
-## A. macOS (Apple Silicon or Intel)
+## A. Mac without Xcode (recommended if disk is tight)
+
+Do **not** run `xcode-select --install`. Do **not** install Homebrew. Do **not** install Xcode from the App Store.
+
+### A1. Node (small installer)
+
+1. Open https://nodejs.org
+2. Download **LTS** → macOS Installer (`.pkg`)
+3. Open the `.pkg` and click through Continue / Install
+4. Quit and reopen **Terminal**
+
+```bash
+node -v
+npm -v
+sudo mkdir -p /usr/local/bin
+sudo corepack enable
+corepack prepare pnpm@9.12.3 --activate
+pnpm -v
+```
+
+If `corepack` is missing:
+
+```bash
+sudo npm install -g pnpm@9.12.3
+pnpm -v
+```
+
+### A2. Ollama (the model runner)
+
+1. Open https://ollama.com/download
+2. Download for macOS, open the `.dmg`, drag **Ollama** to Applications
+3. Open **Ollama** from Applications (menu bar llama icon)
+
+```bash
+ollama --version
+```
+
+If `ollama` is not found:
+
+```bash
+export PATH="/Applications/Ollama.app/Contents/Resources:$PATH"
+echo 'export PATH="/Applications/Ollama.app/Contents/Resources:$PATH"' >> ~/.zprofile
+ollama --version
+```
+
+### A3. Project zip (no git)
+
+In Terminal:
+
+```bash
+cd ~
+curl -L "https://github.com/rauni9869/mental-health-ai-chatbot/archive/refs/heads/cursor/steady-wellness-assistant-c31f.zip" -o steady.zip
+unzip -o steady.zip
+cd mental-health-ai-chatbot-cursor-steady-wellness-assistant-c31f
+```
+
+If `curl` or `unzip` errors, in Safari open that same URL, unzip the download, then:
+
+```bash
+cd ~/Downloads/mental-health-ai-chatbot-cursor-steady-wellness-assistant-c31f
+```
+
+(Folder name may differ slightly; `cd` into the folder that contains `package.json`.)
+
+### A4. Free Postgres (no Docker)
+
+Docker is large. Use a free hosted database instead.
+
+1. Open https://neon.tech and sign up
+2. Create a project (default region is fine)
+3. Copy the **connection string** (starts with `postgres://` or `postgresql://`)
+
+Then in the project folder:
+
+```bash
+cd ~/mental-health-ai-chatbot-cursor-steady-wellness-assistant-c31f
+# if that path fails, cd to wherever package.json is
+
+python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
+```
+
+Copy the printed secret. Create env (replace the two placeholders):
+
+```bash
+cat > .env.local <<'EOF'
+AUTH_SECRET=PASTE_THE_SECRET_HERE
+POSTGRES_URL=PASTE_THE_NEON_URL_HERE
+OLLAMA_BASE_URL=http://127.0.0.1:11434
+OLLAMA_CHAT_MODEL=llama3.1
+OLLAMA_REASONING_MODEL=llama3.1
+OLLAMA_SMALL_MODEL=llama3.1
+OLLAMA_API_KEY=ollama
+EOF
+```
+
+If Neon’s URL contains `&` or quotes, wrap the value in double quotes in `.env.local`.
+
+### A5. Install, migrate, model, run
+
+```bash
+pnpm install
+pnpm db:migrate
+ollama pull llama3.1
+pnpm dev
+```
+
+Wait for **Ready**, then open:
+
+- http://localhost:3000
+- http://localhost:3000/app
+
+Later sessions:
+
+```bash
+cd ~/mental-health-ai-chatbot-cursor-steady-wellness-assistant-c31f
+open -a Ollama
+pnpm dev
+```
+
+---
+
+## A-alt. macOS with Homebrew (needs Command Line Tools, not Xcode)
+
+Only if you are fine with a ~2GB **Command Line Tools** install. This is still **not** Xcode.app.
 
 Open **Terminal** (Spotlight → Terminal).
 
