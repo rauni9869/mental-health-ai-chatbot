@@ -3,11 +3,16 @@ import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { wrapLanguageModel, extractReasoningMiddleware } from 'ai';
 
 /**
- * Open-weight chat models. Default: Groq-hosted Llama / DeepSeek distill.
- * Set OLLAMA_BASE_URL (e.g. http://127.0.0.1:11434) to run fully local.
+ * Open-weight models only. No OpenAI.
+ *
+ * Default: Ollama on http://127.0.0.1:11434 (no API key).
+ * Optional hosted path: set GROQ_API_KEY to use Groq-hosted Llama.
  */
 export function getOpenSourceModels() {
-  const ollamaBaseUrl = process.env.OLLAMA_BASE_URL;
+  const groqKey = process.env.GROQ_API_KEY;
+  const ollamaBaseUrl =
+    process.env.OLLAMA_BASE_URL ??
+    (groqKey ? undefined : 'http://127.0.0.1:11434');
 
   if (ollamaBaseUrl) {
     const ollama = createOpenAICompatible({

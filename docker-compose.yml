@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: steady
+      POSTGRES_PASSWORD: steady
+      POSTGRES_DB: steady
+    ports:
+      - '5432:5432'
+    volumes:
+      - steady_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U steady -d steady']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - '11434:11434'
+    volumes:
+      - steady_ollama:/root/.ollama
+
+volumes:
+  steady_pg:
+  steady_ollama:

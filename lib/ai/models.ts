@@ -10,7 +10,7 @@ export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model',
     name: 'Llama 3.3',
-    description: 'Open-weight Llama 3.3 70B via Groq or local Ollama',
+    description: 'Open-weight Llama via local Ollama (default) or Groq',
   },
   {
     id: 'chat-model-reasoning',

@@ -30,19 +30,23 @@ Steady is not psychotherapy, not a medical device, not HIPAA-grade unless you ad
 
 ## Stack
 
-Next.js App Router, AI SDK tool calling, Postgres/Drizzle, NextAuth. Generation uses **open-weight** models: Llama 3.3 70B on Groq by default, or a local Llama via Ollama. There is no OpenAI dependency.
+Next.js App Router, AI SDK tool calling, Postgres/Drizzle, NextAuth. Generation uses **open-weight** models only: local Llama via Ollama by default (no LLM API key). Groq-hosted Llama is optional. There is no OpenAI dependency.
 
 FastAPI + LangChain are gone on purpose: one deployable app, typed tools, and a pre-model safety gate.
 
 ## Local setup
 
-Copy `.env.example`, set `AUTH_SECRET`, `POSTGRES_URL`, and either `GROQ_API_KEY` or `OLLAMA_BASE_URL`, then:
+Full step-by-step: **[RUN.md](./RUN.md)**.
+
+Short version:
 
 ```bash
-pnpm install
-pnpm db:migrate
+pnpm setup:local
+ollama pull llama3.1
 pnpm dev
 ```
+
+Open http://localhost:3000 then http://localhost:3000/app
 
 ```bash
 pnpm test:unit
