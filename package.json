@@ -16,9 +16,14 @@
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
     "db:up": "drizzle-kit up",
+    "eval:rag": "tsx scripts/eval-rag.ts",
+    "test:unit": "tsx --test lib/wellness/*.test.ts lib/ai/chat-title.test.ts lib/ai/ollama-models.test.ts lib/ai/inference.test.ts lib/ai/groq-models.test.ts",
+    "setup:local": "bash scripts/setup-local.sh",
     "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
   },
   "dependencies": {
+    "@ai-sdk/groq": "2.0.0-beta.2",
+    "@ai-sdk/openai-compatible": "1.0.0-beta.9",
     "@ai-sdk/provider": "2.0.0-beta.1",
     "@ai-sdk/react": "2.0.0-beta.6",
     "@ai-sdk/xai": "2.0.0-beta.2",

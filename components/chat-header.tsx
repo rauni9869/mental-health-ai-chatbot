@@ -43,7 +43,7 @@ function PureChatHeader({
               variant="outline"
               className="order-2 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
               onClick={() => {
-                router.push('/');
+                router.push('/app');
                 router.refresh();
               }}
             >
@@ -76,11 +76,11 @@ function PureChatHeader({
         asChild
       >
         <Link
-          href={`https://vercel.com/new/clone?repository-url=https://github.com/vercel/ai-chatbot&env=AUTH_SECRET&envDescription=Learn more about how to get the API Keys for the application&envLink=https://github.com/vercel/ai-chatbot/blob/main/.env.example&demo-title=AI Chatbot&demo-description=An Open-Source AI Chatbot Template Built With Next.js and the AI SDK by Vercel.&demo-url=https://chat.vercel.ai&products=[{"type":"integration","protocol":"ai","productSlug":"grok","integrationSlug":"xai"},{"type":"integration","protocol":"storage","productSlug":"neon","integrationSlug":"neon"},{"type":"integration","protocol":"storage","productSlug":"upstash-kv","integrationSlug":"upstash"},{"type":"blob"}]`}
-          target="_noblank"
+          href="https://www.iasp.info/suicidalthoughts/"
+          target="_blank"
+          rel="noreferrer"
         >
-          <VercelIcon size={16} />
-          Deploy with Vercel
+          Crisis resources
         </Link>
       </Button>
     </header>

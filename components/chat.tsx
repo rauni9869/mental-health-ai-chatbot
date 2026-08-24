@@ -5,6 +5,7 @@ import { useChat } from '@ai-sdk/react';
 import { useEffect, useState } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { ChatHeader } from '@/components/chat-header';
+import { SafetyBanner } from '@/components/safety-banner';
 import type { Vote } from '@/lib/db/schema';
 import { fetcher, fetchWithErrorHandlers, generateUUID } from '@/lib/utils';
 import { Artifact } from './artifact';
@@ -136,6 +137,8 @@ export function Chat({
           isReadonly={isReadonly}
           session={session}
         />
+
+        <SafetyBanner />
 
         <Messages
           chatId={id}

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "dizzy-sleep",
+    "source": "real-user",
+    "utterance": "i am feeling dizzy and also not able to sleep , what to do",
+    "relevantIds": ["sleep", "anxiety-body"]
+  },
+  {
+    "id": "panic-cant-breathe",
+    "source": "simulated-user",
+    "utterance": "I'm having a panic attack and can't breathe",
+    "relevantIds": ["panic-wave", "anxiety-body", "grounding"]
+  },
+  {
+    "id": "looping-thoughts",
+    "source": "simulated-user",
+    "utterance": "I keep replaying the same argument and cannot stop",
+    "relevantIds": ["rumination"]
+  }
+]

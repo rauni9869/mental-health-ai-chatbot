@@ -1,0 +1,76 @@
+[
+  {
+    "id": "panic",
+    "split": "val",
+    "query": "sudden fear I am dying racing heart panic minutes",
+    "relevantIds": ["panic-wave", "anxiety-body"]
+  },
+  {
+    "id": "sleep",
+    "split": "val",
+    "query": "cannot fall asleep screens in bed worry at night",
+    "relevantIds": ["sleep", "rumination"]
+  },
+  {
+    "id": "rumination",
+    "split": "val",
+    "query": "same worry looping in my head over and over",
+    "relevantIds": ["rumination"]
+  },
+  {
+    "id": "burnout",
+    "split": "val",
+    "query": "always-on work exhausted cynical cannot switch off job",
+    "relevantIds": ["boundaries-work"]
+  },
+  {
+    "id": "grounding",
+    "split": "val",
+    "query": "feel unreal flooded 5-4-3-2-1 senses",
+    "relevantIds": ["grounding"]
+  },
+  {
+    "id": "depression",
+    "split": "val",
+    "query": "two weeks empty no interest cannot function",
+    "relevantIds": ["low-mood"]
+  },
+  {
+    "id": "urges",
+    "split": "test",
+    "query": "urge to drink rising like a wave delay the action",
+    "relevantIds": ["substance-coping"]
+  },
+  {
+    "id": "therapy",
+    "split": "test",
+    "query": "notes and questions for my therapist between sessions",
+    "relevantIds": ["therapy-between-sessions"]
+  },
+  {
+    "id": "loneliness",
+    "split": "test",
+    "query": "isolated nobody to talk to need connection",
+    "relevantIds": ["loneliness"]
+  },
+  {
+    "id": "anxiety-body",
+    "split": "test",
+    "query": "tight chest restlessness stomach anxiety alarm in my body",
+    "relevantIds": ["anxiety-body", "panic-wave"]
+  },
+  {
+    "id": "off-domain-photosynthesis",
+    "split": "val",
+    "query": "explain chloroplast photosynthesis in plants",
+    "relevantIds": [],
+    "failClosed": true
+  },
+  {
+    "id": "off-domain-algorithms",
+    "split": "test",
+    "query": "binary heap insert complexity big-o notation",
+    "relevantIds": [],
+    "failClosed": true
+  }
+]

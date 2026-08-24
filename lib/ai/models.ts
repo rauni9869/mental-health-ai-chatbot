@@ -9,12 +9,13 @@ export interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model',
-    name: 'Chat model',
-    description: 'Primary model for all-purpose chat',
+    name: 'Hosted open-weight',
+    description:
+      'Groq-hosted GPT-OSS (open weights). Llama Instant was retired on Groq’s free tier.',
   },
   {
     id: 'chat-model-reasoning',
-    name: 'Reasoning model',
-    description: 'Uses advanced reasoning',
+    name: 'Hosted (careful)',
+    description: 'Same hosted open-weight model, used for slower careful replies',
   },
 ];

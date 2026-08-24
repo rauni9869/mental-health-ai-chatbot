@@ -1,6 +1,5 @@
 import { Toaster } from 'sonner';
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 
 import './globals.css';
@@ -8,27 +7,16 @@ import { SessionProvider } from 'next-auth/react';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
-  title: 'Next.js Chatbot Template',
-  description: 'Next.js chatbot template using the AI SDK.',
+  title: 'Steady — between-session mental health companion',
+  description:
+    'A production-minded companion for grounded coping, private check-ins, and crisis routing. Not therapy.',
 };
 
 export const viewport = {
   maximumScale: 1, // Disable auto-zoom on mobile Safari
 };
 
-const geist = Geist({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-geist',
-});
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-geist-mono',
-});
-
-const LIGHT_THEME_COLOR = 'hsl(0 0% 100%)';
+const LIGHT_THEME_COLOR = 'hsl(40 33% 97%)';
 const DARK_THEME_COLOR = 'hsl(240deg 10% 3.92%)';
 const THEME_COLOR_SCRIPT = `\
 (function() {
@@ -61,7 +49,6 @@ export default async function RootLayout({
       // prop is necessary to avoid the React hydration mismatch warning.
       // https://github.com/pacocoursey/next-themes?tab=readme-ov-file#with-app
       suppressHydrationWarning
-      className={`${geist.variable} ${geistMono.variable}`}
     >
       <head>
         <script

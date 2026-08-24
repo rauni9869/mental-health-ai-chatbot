@@ -23,8 +23,18 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
+import { retrieveKnowledge } from '@/lib/ai/tools/retrieve-knowledge';
+import { guideCopingSkill } from '@/lib/ai/tools/guide-coping-skill';
+import { getCrisisResources } from '@/lib/ai/tools/get-crisis-resources';
+import { logMoodCheckIn } from '@/lib/ai/tools/log-mood-check-in';
+import {
+  assessCrisis,
+  buildCrisisReply,
+  extractUserText,
+} from '@/lib/wellness/crisis';
 import { isProductionEnvironment } from '@/lib/constants';
-import { myProvider } from '@/lib/ai/providers';
+import { getLanguageModel } from '@/lib/ai/providers';
+import { describeOllamaModelError } from '@/lib/ai/ollama-models';
 import { entitlementsByUserType } from '@/lib/ai/entitlements';
 import { postRequestBodySchema, type PostRequestBody } from './schema';
 import { geolocation } from '@vercel/functions';
@@ -133,6 +143,9 @@ export async function POST(request: Request) {
       country,
     };
 
+    const userText = extractUserText(message.parts as Array<{ type?: string; text?: string }>);
+    const crisis = assessCrisis(userText);
+
     await saveMessages({
       messages: [
         {
@@ -152,10 +165,37 @@ export async function POST(request: Request) {
     console.log(JSON.stringify(uiMessages, null, 2));
 
     const stream = createUIMessageStream({
-      execute: ({ writer: dataStream }) => {
+      execute: async ({ writer: dataStream }) => {
+        if (crisis.level === 'imminent') {
+          const reply = buildCrisisReply(country);
+          dataStream.write({ type: 'text-start', id: 'crisis-reply' });
+          dataStream.write({
+            type: 'text-delta',
+            id: 'crisis-reply',
+            delta: reply,
+          });
+          dataStream.write({ type: 'text-end', id: 'crisis-reply' });
+          return;
+        }
+
+        let model;
+        try {
+          model = await getLanguageModel(selectedChatModel);
+        } catch (error) {
+          const reply = describeOllamaModelError(error);
+          dataStream.write({ type: 'text-start', id: 'model-setup' });
+          dataStream.write({
+            type: 'text-delta',
+            id: 'model-setup',
+            delta: reply,
+          });
+          dataStream.write({ type: 'text-end', id: 'model-setup' });
+          return;
+        }
+
         const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
+          model,
+          system: systemPrompt({ selectedChatModel, requestHints, crisisLevel: crisis.level }),
           messages: convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
           experimental_activeTools:
@@ -166,6 +206,10 @@ export async function POST(request: Request) {
                   'createDocument',
                   'updateDocument',
                   'requestSuggestions',
+                  'retrieveKnowledge',
+                  'guideCopingSkill',
+                  'getCrisisResources',
+                  'logMoodCheckIn',
                 ],
           experimental_transform: smoothStream({ chunking: 'word' }),
           tools: {
@@ -176,6 +220,10 @@ export async function POST(request: Request) {
               session,
               dataStream,
             }),
+            retrieveKnowledge,
+            guideCopingSkill,
+            getCrisisResources,
+            logMoodCheckIn: logMoodCheckIn({ session, chatId: id }),
           },
           experimental_telemetry: {
             isEnabled: isProductionEnvironment,
@@ -205,26 +253,46 @@ export async function POST(request: Request) {
         });
       },
       onError: (error) => {
-        console.log(error);
-        return 'Oops, an error occurred!';
+        console.error(error);
+        return describeOllamaModelError(error);
       },
     });
 
     const streamContext = getStreamContext();
+    const sseHeaders = {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+    };
 
     if (streamContext) {
-      return new Response(
-        await streamContext.resumableStream(streamId, () =>
+      try {
+        const resumable = await streamContext.resumableStream(streamId, () =>
           stream.pipeThrough(new JsonToSseTransformStream()),
-        ),
-      );
-    } else {
-      return new Response(stream);
+        );
+
+        if (resumable) {
+          return new Response(resumable, { headers: sseHeaders });
+        }
+      } catch (resumeError) {
+        console.error(
+          'Resumable stream failed; sending live SSE instead',
+          resumeError,
+        );
+      }
     }
+
+    return new Response(stream.pipeThrough(new JsonToSseTransformStream()), {
+      headers: sseHeaders,
+    });
   } catch (error) {
+    console.error('POST /api/chat failed', error);
+
     if (error instanceof ChatSDKError) {
       return error.toResponse();
     }
+
+    const cause = error instanceof Error ? error.message : String(error);
+    return new ChatSDKError('offline:chat', cause).toResponse();
   }
 }
 
