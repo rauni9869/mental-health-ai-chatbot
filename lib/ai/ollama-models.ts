@@ -74,8 +74,8 @@ export function describeOllamaModelError(error: unknown): string {
     return 'The hosted model is rate-limited. Wait a minute and send the message again.';
   }
 
-  if (/not found|no pulled models/i.test(message)) {
-    return 'No local chat model is installed. Laptops should use Groq instead: add GROQ_API_KEY from https://console.groq.com/keys, comment out OLLAMA_BASE_URL, quit Ollama, and restart pnpm dev.';
+  if (/not found|does not exist|model_not_found/i.test(message)) {
+    return 'Groq no longer serves that model ID on the free tier (Llama Instant was retired). Pull the latest Steady code, or set GROQ_CHAT_MODEL=openai/gpt-oss-20b in .env.local and restart pnpm dev.';
   }
 
   if (

@@ -9,13 +9,13 @@ export interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model',
-    name: 'Llama (hosted)',
+    name: 'Hosted open-weight',
     description:
-      'Groq-hosted Llama when GROQ_API_KEY is set — recommended on laptops. Local Ollama only if you force it.',
+      'Groq-hosted GPT-OSS (open weights). Llama Instant was retired on Groq’s free tier.',
   },
   {
     id: 'chat-model-reasoning',
-    name: 'Llama (careful)',
-    description: 'A larger hosted Llama for slower, more careful replies',
+    name: 'Hosted (careful)',
+    description: 'Same hosted open-weight model, used for slower careful replies',
   },
 ];

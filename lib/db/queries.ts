@@ -199,9 +199,11 @@ export async function getChatsByUserId({
       hasMore,
     };
   } catch (error) {
+    console.error('getChatsByUserId failed', error);
+    const detail = error instanceof Error ? error.message : String(error);
     throw new ChatSDKError(
       'bad_request:database',
-      'Failed to get chats by user id',
+      `Failed to get chats by user id: ${detail}`,
     );
   }
 }

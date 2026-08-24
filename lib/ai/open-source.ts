@@ -2,23 +2,38 @@ import { groq } from '@ai-sdk/groq';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { wrapLanguageModel, extractReasoningMiddleware } from 'ai';
 import { chooseInferenceBackend } from './inference';
+import {
+  DEFAULT_GROQ_CHAT_MODEL,
+  resolveGroqModelId,
+} from './groq-models';
 import { listOllamaModelNames, pickOllamaModel } from './ollama-models';
 
 /**
- * Open-weight models only. No OpenAI.
+ * Open-weight models only. No ChatGPT/OpenAI API key.
  *
- * If GROQ_API_KEY is set, use hosted Llama (recommended on laptops).
+ * If GROQ_API_KEY is set, use Groq (GPT-OSS after Llama Instant was retired).
  * Otherwise use local Ollama. Set USE_OLLAMA=1 to force local even with a Groq key.
  */
 export async function getOpenSourceModels() {
   if (chooseInferenceBackend() === 'groq') {
     console.info(
-      'Using Groq-hosted Llama. Ollama is not used — you can quit the Ollama app.',
+      'Using Groq-hosted open-weight GPT-OSS. Ollama is not used — you can quit the Ollama app.',
     );
-    const chatId = process.env.GROQ_CHAT_MODEL ?? 'llama-3.1-8b-instant';
-    const reasoningId =
-      process.env.GROQ_REASONING_MODEL ?? 'llama-3.3-70b-versatile';
-    const smallId = process.env.GROQ_SMALL_MODEL ?? 'llama-3.1-8b-instant';
+    const requestedChat =
+      process.env.GROQ_CHAT_MODEL ?? DEFAULT_GROQ_CHAT_MODEL;
+    const requestedReasoning =
+      process.env.GROQ_REASONING_MODEL ?? DEFAULT_GROQ_CHAT_MODEL;
+    const requestedSmall =
+      process.env.GROQ_SMALL_MODEL ?? DEFAULT_GROQ_CHAT_MODEL;
+    const chatId = resolveGroqModelId(requestedChat);
+    const reasoningId = resolveGroqModelId(requestedReasoning);
+    const smallId = resolveGroqModelId(requestedSmall);
+
+    if (chatId !== requestedChat) {
+      console.info(
+        `Groq model "${requestedChat}" is retired on the free tier. Using "${chatId}" instead.`,
+      );
+    }
 
     return {
       chat: groq(chatId),

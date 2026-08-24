@@ -16,9 +16,9 @@ AUTH_SECRET=${secret}
 POSTGRES_URL=postgres://steady:steady@127.0.0.1:5432/steady
 # Recommended on a laptop: hosted Llama. Do not run llama3.1 locally.
 GROQ_API_KEY=
-GROQ_CHAT_MODEL=llama-3.1-8b-instant
-GROQ_REASONING_MODEL=llama-3.3-70b-versatile
-GROQ_SMALL_MODEL=llama-3.1-8b-instant
+GROQ_CHAT_MODEL=openai/gpt-oss-20b
+GROQ_REASONING_MODEL=openai/gpt-oss-20b
+GROQ_SMALL_MODEL=openai/gpt-oss-20b
 EOF
   echo "Wrote .env.local (gitignored). AUTH_SECRET was generated. No OpenAI key."
 else
