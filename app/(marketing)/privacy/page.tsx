@@ -21,9 +21,9 @@ export default function PrivacyPage() {
           notice, retention limits, and a BAA before calling this HIPAA.
         </p>
         <p>
-          Models run on your machine via Ollama by default, or on Groq if you
-          set a Groq key. Prompt text is sent only to that provider. Do not send
-          content you would not type into that vendor.
+          Models run on Groq when GROQ_API_KEY is set (prompt text goes to Groq).
+          Local Ollama is optional for machines that can run a 5GB model. Do not
+          send content you would not type into that vendor.
         </p>
       </div>
     </article>

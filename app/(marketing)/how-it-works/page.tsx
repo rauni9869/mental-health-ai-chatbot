@@ -17,8 +17,8 @@ export default function HowItWorksPage() {
         <section>
           <h2 className="text-lg font-semibold">2. Open-source generation</h2>
           <p className="mt-2">
-            Replies come from a local Llama via Ollama by default (no API key),
-            or from Groq-hosted Llama if you add a Groq key. Not OpenAI.
+            Replies come from Groq-hosted Llama when a Groq key is set (recommended
+            on laptops), or from local Ollama if you force that. Not OpenAI.
           </p>
         </section>
         <section>

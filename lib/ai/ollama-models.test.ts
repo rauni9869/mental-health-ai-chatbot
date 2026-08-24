@@ -38,5 +38,5 @@ test('explains a missing-model 404', () => {
   const text = describeOllamaModelError(
     new Error("model 'llama3.2:1b' not found"),
   );
-  assert.match(text, /ollama pull/i);
+  assert.match(text, /GROQ_API_KEY|Groq/i);
 });

@@ -14,11 +14,11 @@ if [ ! -f .env.local ]; then
   cat > .env.local <<EOF
 AUTH_SECRET=${secret}
 POSTGRES_URL=postgres://steady:steady@127.0.0.1:5432/steady
-OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_CHAT_MODEL=llama3.1:latest
-OLLAMA_REASONING_MODEL=llama3.1:latest
-OLLAMA_SMALL_MODEL=llama3.1:latest
-OLLAMA_API_KEY=ollama
+# Recommended on a laptop: hosted Llama. Do not run llama3.1 locally.
+GROQ_API_KEY=
+GROQ_CHAT_MODEL=llama-3.1-8b-instant
+GROQ_REASONING_MODEL=llama-3.3-70b-versatile
+GROQ_SMALL_MODEL=llama-3.1-8b-instant
 EOF
   echo "Wrote .env.local (gitignored). AUTH_SECRET was generated. No OpenAI key."
 else
@@ -43,10 +43,10 @@ pnpm db:migrate
 
 echo
 echo "Next:"
-echo "  1. Install Ollama from https://ollama.com and run:  ollama pull llama3.1"
-echo "     Or start the compose Ollama service:  docker compose up -d ollama"
-echo "     then:  docker compose exec ollama ollama pull llama3.1"
+echo "  1. Get a free Groq key: https://console.groq.com/keys"
+echo "     Paste it as GROQ_API_KEY in .env.local (do not run llama3.1 on a laptop)"
 echo "  2. pnpm dev"
 echo "  3. Open http://localhost:3000 then http://localhost:3000/app"
+echo "  4. Quit the Ollama app so it is not using RAM"
 echo
 echo "Do not commit .env.local. Do not put OpenAI keys in this project."

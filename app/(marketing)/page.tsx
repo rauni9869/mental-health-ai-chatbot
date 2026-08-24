@@ -7,7 +7,7 @@ const features = [
   },
   {
     title: 'Open-weight models',
-    body: 'Local Llama via Ollama by default — no LLM API key. Optional Groq-hosted Llama. No OpenAI.',
+    body: 'Groq-hosted Llama on a laptop (fast, no local 5GB model). Optional fully local Ollama on a machine with enough RAM. No OpenAI.',
   },
   {
     title: 'Grounded answers',
@@ -32,7 +32,7 @@ const faqs = [
   },
   {
     q: 'What model does it use?',
-    a: 'Open-weight models: Llama on your machine through Ollama by default, or Llama on Groq if you set GROQ_API_KEY. Not GPT.',
+    a: 'Open-weight Llama: Groq-hosted on a laptop (recommended), or Ollama on a machine that can run a 5GB model. Not GPT.',
   },
   {
     q: 'Will it search the web for medical advice?',

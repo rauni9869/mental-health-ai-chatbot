@@ -9,13 +9,13 @@ export interface ChatModel {
 export const chatModels: Array<ChatModel> = [
   {
     id: 'chat-model',
-    name: 'Llama 3.3',
+    name: 'Llama (hosted)',
     description:
-      'General Llama steered for mental health (prompt + curated notes, not a fine-tuned clinical model)',
+      'Groq-hosted Llama when GROQ_API_KEY is set — recommended on laptops. Local Ollama only if you force it.',
   },
   {
     id: 'chat-model-reasoning',
-    name: 'DeepSeek R1',
-    description: 'Open-weight reasoning distill for careful replies',
+    name: 'Llama (careful)',
+    description: 'A larger hosted Llama for slower, more careful replies',
   },
 ];

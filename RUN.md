@@ -2,7 +2,9 @@
 
 You start with **nothing installed**. Pick **one** operating system section, run **every command in order**.
 
-Steady uses **local open-weight Llama via Ollama**. There is **no OpenAI key**. Do not paste Groq/OpenAI secrets into git.
+Steady uses **open-weight Llama**. On a laptop, use **Groq-hosted Llama** (fast, does not freeze the Mac). Local Ollama is only for machines that can run a ~5GB model. There is **no OpenAI key**. Do not paste secrets into git.
+
+**If Ollama already froze your Mac:** quit the Ollama app, add `GROQ_API_KEY` in `.env.local`, comment out `OLLAMA_BASE_URL`, restart `pnpm dev`. Chat still uses Llama — it just does not run on your laptop.
 
 **You do not need Xcode.** Xcode.app is 10GB+. Skip it. Skip Homebrew too if you do not want Command Line Tools.
 
@@ -35,23 +37,14 @@ sudo npm install -g pnpm@9.12.3
 pnpm -v
 ```
 
-### A2. Ollama (the model runner)
+### A2. Groq key (hosted Llama — skip Ollama on a laptop)
 
-1. Open https://ollama.com/download
-2. Download for macOS, open the `.dmg`, drag **Ollama** to Applications
-3. Open **Ollama** from Applications (menu bar llama icon)
+`llama3.1` on a Mac will freeze many machines. Use Groq instead. Still Llama, not GPT.
 
-```bash
-ollama --version
-```
-
-If `ollama` is not found:
-
-```bash
-export PATH="/Applications/Ollama.app/Contents/Resources:$PATH"
-echo 'export PATH="/Applications/Ollama.app/Contents/Resources:$PATH"' >> ~/.zprofile
-ollama --version
-```
+1. Open https://console.groq.com/keys
+2. Create a free account
+3. Create an API key and copy it (starts with `gsk_`)
+4. If the Ollama app is open, quit it from the menu bar so it stops using RAM
 
 ### A3. Project zip (no git)
 
@@ -89,17 +82,16 @@ cd ~/mental-health-ai-chatbot-cursor-steady-wellness-assistant-c31f
 python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
 ```
 
-Copy the printed secret. Create env (replace the two placeholders):
+Copy the printed secret. Create env (replace the three placeholders):
 
 ```bash
 cat > .env.local <<'EOF'
 AUTH_SECRET=PASTE_THE_SECRET_HERE
 POSTGRES_URL=PASTE_THE_NEON_URL_HERE
-OLLAMA_BASE_URL=http://127.0.0.1:11434
-OLLAMA_CHAT_MODEL=llama3.1
-OLLAMA_REASONING_MODEL=llama3.1
-OLLAMA_SMALL_MODEL=llama3.1
-OLLAMA_API_KEY=ollama
+GROQ_API_KEY=PASTE_THE_GROQ_KEY_HERE
+GROQ_CHAT_MODEL=llama-3.1-8b-instant
+GROQ_REASONING_MODEL=llama-3.3-70b-versatile
+GROQ_SMALL_MODEL=llama-3.1-8b-instant
 EOF
 ```
 
@@ -110,14 +102,10 @@ If Neon’s URL contains `&` or quotes, wrap the value in double quotes in `.env
 ```bash
 pnpm install
 pnpm db:migrate
-ollama list
-# You already have a model if a NAME appears (for example llama3.1:latest).
-# Only pull if the list is empty:
-# ollama pull llama3.1
 pnpm dev
 ```
 
-`ollama list` must show a model **before** chat will work. Put that exact NAME in `.env.local` as `OLLAMA_CHAT_MODEL` (example: `llama3.1:latest`). Do not set `llama3.2:1b` unless that name is in the list.
+Quit **Ollama** from the menu bar (the llama icon) so it is not using RAM. Chat goes to Groq, not to `llama3.1` on the Mac.
 
 Wait for **Ready**, then open:
 
@@ -128,7 +116,6 @@ Later sessions:
 
 ```bash
 cd ~/mental-health-ai-chatbot-cursor-steady-wellness-assistant-c31f
-open -a Ollama
 pnpm dev
 ```
 

@@ -30,7 +30,7 @@ Steady is not psychotherapy, not a medical device, not HIPAA-grade unless you ad
 
 ## Stack
 
-Next.js App Router, AI SDK tool calling, Postgres/Drizzle, NextAuth. Generation uses **open-weight** models only: local Llama via Ollama by default (no LLM API key). Groq-hosted Llama is optional. There is no OpenAI dependency.
+Next.js App Router, AI SDK tool calling, Postgres/Drizzle, NextAuth. Generation uses **open-weight** Llama: **Groq-hosted on a laptop** (recommended), or local Ollama on a machine with enough RAM. There is no OpenAI dependency.
 
 FastAPI + LangChain are gone on purpose: one deployable app, typed tools, and a pre-model safety gate.
 

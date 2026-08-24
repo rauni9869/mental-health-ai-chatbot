@@ -66,16 +66,24 @@ export async function listOllamaModelNames(baseUrl: string): Promise<string[]> {
 export function describeOllamaModelError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
 
+  if (/invalid api key|unauthorized|401/i.test(message)) {
+    return 'Groq rejected the API key. Check GROQ_API_KEY in .env.local, then restart pnpm dev.';
+  }
+
+  if (/rate limit|429/i.test(message)) {
+    return 'The hosted model is rate-limited. Wait a minute and send the message again.';
+  }
+
   if (/not found|no pulled models/i.test(message)) {
-    return 'Ollama is running, but no usable chat model is installed. In Terminal run: ollama list. Then ollama pull llama3.1 (about 5GB) or a smaller model. If a model is already listed, put that exact name in .env.local as OLLAMA_CHAT_MODEL and restart pnpm dev.';
+    return 'No local chat model is installed. Laptops should use Groq instead: add GROQ_API_KEY from https://console.groq.com/keys, comment out OLLAMA_BASE_URL, quit Ollama, and restart pnpm dev.';
   }
 
   if (
     /econnrefused|fetch failed|network|enotfound/i.test(message) ||
     /Failed to connect/i.test(message)
   ) {
-    return 'Cannot reach Ollama at 127.0.0.1:11434. Open the Ollama app from Applications and try again.';
+    return 'Cannot reach a local Ollama process. On a laptop, use Groq (GROQ_API_KEY) instead of running llama3.1 on the Mac. Quit Ollama so it stops using RAM.';
   }
 
-  return message || 'The local model failed to reply.';
+  return message || 'The model failed to reply.';
 }
