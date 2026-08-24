@@ -18,11 +18,11 @@ Steady is designed around those failure modes.
 ## What it does
 
 1. **Crisis gate** — regex safety screen before the model. Imminent-harm language skips generation and returns local resources (988 in the US, IASP internationally).
-2. **Grounded RAG** — keyword retrieval over a small, reviewed corpus. No DuckDuckGo. No Wikipedia.
-3. **One skill at a time** — box breathing, 5-4-3-2-1, thought records, sleep wind-down, urge surfing.
-4. **Private check-ins** — mood logs stored per user, not as a public chat.
-5. **Artifacts** — thought records and between-session notes the user can keep.
-6. **Deterministic evals** — unit tests for crisis detection plus policy guards against diagnosis, means, and prescribing.
+2. **Grounded RAG** — TF-IDF vectors + cosine over a reviewed public-health corpus. Top-k with a score floor (fail closed).
+3. **Eval loop** — frozen datasets in `evals/datasets/`, thresholds in `eval-contract.ts`, `pnpm eval:rag` scorecard (relevance, factuality, hallucination catch, edge cases, user traces).
+4. **One skill at a time** — box breathing, 5-4-3-2-1, thought records, sleep wind-down, urge surfing.
+5. **Private check-ins** — mood logs stored per user.
+6. **Safety tests** — crisis routing plus policy guards (no diagnosis / means / prescribing).
 
 ## What it is not
 
@@ -50,7 +50,10 @@ Open http://localhost:3000 then http://localhost:3000/app
 
 ```bash
 pnpm test:unit
+pnpm eval:rag
 ```
+
+Eval datasets and the definition of “good”: **[evals/README.md](./evals/README.md)**.
 
 ## Production notes
 

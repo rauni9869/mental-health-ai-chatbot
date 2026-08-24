@@ -1,3 +1,10 @@
+import {
+  buildTfidfIndex,
+  cosineSimilarity,
+  embedQuery,
+  tokenize,
+} from './vector';
+
 export type KnowledgeDoc = {
   id: string;
   title: string;
@@ -94,40 +101,6 @@ export const WELLNESS_CORPUS: KnowledgeDoc[] = [
   },
 ];
 
-const STOP_WORDS = new Set([
-  'a',
-  'an',
-  'the',
-  'and',
-  'or',
-  'to',
-  'of',
-  'in',
-  'on',
-  'for',
-  'with',
-  'is',
-  'are',
-  'i',
-  'me',
-  'my',
-  'you',
-  'your',
-  'it',
-  'this',
-  'that',
-  'help',
-  'please',
-]);
-
-function tokenize(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/)
-    .filter((token) => token.length > 2 && !STOP_WORDS.has(token));
-}
-
 export type RetrievedChunk = {
   id: string;
   title: string;
@@ -135,7 +108,20 @@ export type RetrievedChunk = {
   sourceUrl: string;
   excerpt: string;
   score: number;
+  cosine: number;
 };
+
+const VECTOR_INDEX = buildTfidfIndex(
+  WELLNESS_CORPUS.map((doc) => ({
+    id: doc.id,
+    title: doc.title,
+    topic: doc.topic,
+    text: doc.content,
+  })),
+);
+
+/** Below this cosine+boost score, retrieve nothing (fail closed). */
+export const RETRIEVAL_SCORE_FLOOR = 0.06;
 
 export function retrieveWellnessKnowledge(
   query: string,
@@ -143,26 +129,20 @@ export function retrieveWellnessKnowledge(
 ): RetrievedChunk[] {
   const terms = tokenize(query);
   if (terms.length === 0) {
-    return WELLNESS_CORPUS.slice(0, limit).map((doc) => ({
-      id: doc.id,
-      title: doc.title,
-      sourceName: doc.sourceName,
-      sourceUrl: doc.sourceUrl,
-      excerpt: doc.content,
-      score: 0,
-    }));
+    return [];
   }
 
-  const scored = WELLNESS_CORPUS.map((doc) => {
-    const haystack = tokenize(`${doc.title} ${doc.topic} ${doc.content}`);
-    const score = terms.reduce((sum, term) => {
-      const hits = haystack.filter((token) => token.includes(term)).length;
-      const titleBoost = tokenize(doc.title).some((token) => token.includes(term))
-        ? 2
-        : 0;
-      const topicBoost = doc.topic.includes(term) ? 3 : 0;
-      return sum + hits + titleBoost + topicBoost;
-    }, 0);
+  const queryVector = embedQuery(query, VECTOR_INDEX.idf);
+
+  const scored = WELLNESS_CORPUS.map((doc, index) => {
+    const cosine = cosineSimilarity(queryVector, VECTOR_INDEX.vectors[index]);
+    const titleHits = tokenize(doc.title).filter((token) =>
+      terms.some((term) => token.includes(term) || term.includes(token)),
+    ).length;
+    const topicHits = tokenize(doc.topic).filter((token) =>
+      terms.some((term) => token.includes(term) || term.includes(token)),
+    ).length;
+    const score = cosine + 0.08 * titleHits + 0.12 * topicHits;
 
     return {
       id: doc.id,
@@ -171,9 +151,12 @@ export function retrieveWellnessKnowledge(
       sourceUrl: doc.sourceUrl,
       excerpt: doc.content,
       score,
+      cosine,
     };
   })
-    .filter((doc) => doc.score > 0)
+    .filter(
+      (doc) => doc.score >= RETRIEVAL_SCORE_FLOOR && doc.cosine >= 0.09,
+    )
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 
